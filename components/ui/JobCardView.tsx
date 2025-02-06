@@ -1,11 +1,11 @@
 import {ThemedText} from "@/components/ThemedText";
 import {Pressable, StyleSheet, Text, View, Animated, Easing} from "react-native";
 import React, {useEffect, useRef, useState} from "react";
-import {FontAwesome5} from "@expo/vector-icons";
+import {AntDesign, FontAwesome5} from "@expo/vector-icons";
 import ModalView from "@/components/ui/ModalView";
 import {useApp} from "@/app/useContextAccount";
 
-const JobCardView = ({job}:{job:any}) => {
+const JobCardView = ({job, editable}:{job:any, editable:boolean}) => {
     const {saveInfo} = useApp()
 
     const {status} = useApp()
@@ -70,63 +70,97 @@ const JobCardView = ({job}:{job:any}) => {
      <View style={styles.container_job}>
          <View style={styles.flex_row}>
              {job?.customer?.first_name &&
-                 <ThemedText type="subtitle">{job?.customer?.first_name}</ThemedText>}
+                 <ThemedText type="title">{job?.customer?.first_name}</ThemedText>}
              {job?.customer?.last_name &&
-                 <ThemedText type="subtitle">{job?.customer?.last_name}</ThemedText>}
+                 <ThemedText type="title">{job?.customer?.last_name}</ThemedText>}
          </View>
-             <ModalView Element={employeesModal} text={<FontAwesome5 name="user-alt" size={18} />} />
+         <AntDesign name={"calendar"} size={22} />
          <View style={styles.flex_row}>
-             <ThemedText type="defaultSemiBold">{new Date(job?.schedule?.scheduled_start).toLocaleString()}</ThemedText>
-             <ThemedText>-</ThemedText>
-             <ThemedText darkColor={"#756512"} type="defaultSemiBold">{new Date(job?.schedule?.scheduled_end).toLocaleString()}</ThemedText>
+             <ThemedText style={styles.startText} type="defaultSemiBold">{new Date(job?.schedule?.scheduled_start).toLocaleString()}</ThemedText>
+             <ThemedText style={styles.endText} type="defaultSemiBold">{new Date(job?.schedule?.scheduled_end).toLocaleString()}</ThemedText>
          </View>
-         <View style={styles.flex_row}>
-             {
-                 option.state !== 'start' ?
-                     <Pressable
-                         style={[styles.button]}
-                         onPress={startHandle}>
-                         <FontAwesome5 style={styles.icon} name="play" size={26} color="green" />
-                         <Text style={styles.textStyle}>{option?.date ? new Date(option?.date).toLocaleTimeString() : 'Start'}</Text>
-                     </Pressable>
-                     :
+         {editable ?
+             <View style={styles.flex_row}>
+                 {
+                     option.state !== 'start' ?
                          <Pressable
-                             style={[styles.button]}
+                             style={[styles.button, styles.buttonStart]}
+                             onPress={startHandle}>
+                             <FontAwesome5 style={styles.icon} name="play" size={26} color="white" />
+                             <Text style={styles.textStyle}>{option?.date ? new Date(option?.date).toLocaleTimeString() : 'Start'}</Text>
+                         </Pressable>
+                         :
+                         <Pressable
+                             style={[styles.button, styles.buttonStop]}
                              onPress={stopHandle}>
                              <Animated.View style={{ transform: [{ rotate: rotation }] }}>
-                                <FontAwesome5 style={styles.icon} name="circle-notch" size={26} color="red" />
+                                 <FontAwesome5 style={styles.icon} name="circle-notch" size={26} color="white" />
                              </Animated.View>
                              <Text style={styles.textStyle}>{option?.date ? new Date(option?.date).toLocaleTimeString() : 'Stop'}</Text>
                          </Pressable>
-             }
-         </View>
+                 }
+             </View>:
+             <View style={styles.flex_row}>
+                 {
+                     option.state !== 'start' ?
+                             <Text style={styles.buttonStart}>{option?.date ? new Date(option?.date).toLocaleTimeString() : 'Start'}</Text>
+                         :
+                             <Text style={styles.buttonStop}>{option?.date ? new Date(option?.date).toLocaleTimeString() : 'Stop'}</Text>
+                 }
+             </View>
+
+         }
+         <ModalView Element={employeesModal} text={<ThemedText style={styles.textStyle} type={"link"}>See workers</ThemedText>} />
      </View>
  )
 }
 
 const styles = StyleSheet.create({
     button: {
-        padding: 10,
+        padding: 15,
         alignItems: "center",
+        justifyContent: "center",
+        width: 120,
+        height: 120,
+
+        borderWidth: 2,
+        borderColor: "#cfb628",
+        borderRadius: '100%',
+    },
+    buttonStart: {
+        color: "#dfdfdf",
+        backgroundColor: "#76bc63",
+    },
+    buttonStop: {
+        color: "#dfdfdf",
+        backgroundColor: "#bc6363",
     },
     icon: {
         padding: 8,
     },
     textStyle: {
-        color: 'blue',
+        color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
-
-        borderTopWidth: 2,
-        borderTopColor: "#dfdfdf",
+    },
+    endText: {
+        color: '#ff6868',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    startText: {
+        color: '#48b1c1',
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
     container_job: {
-        padding: 10,
+        padding: 20,
         display: 'flex',
         flexDirection: 'column',
+        alignItems: "center",
         backgroundColor: 'white',
         borderRadius: 15,
-        gap: '5px',
+        gap: '10px',
 
         shadowColor: '#000',
         shadowOffset: {
@@ -147,7 +181,7 @@ const styles = StyleSheet.create({
     flex_col: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '5px'
+        gap: '10px'
     }
 });
 

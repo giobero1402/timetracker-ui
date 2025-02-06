@@ -28,7 +28,7 @@ export default function TabTwoScreen() {
         <View style={styles.container_job}>
             {
                 jobs.map((job: any, i: number) => (
-                    <JobCardView job={job} key={i} />
+                    <JobCardView editable={false} job={job} key={i} />
                 ))
             }
         </View>

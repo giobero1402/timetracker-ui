@@ -8,7 +8,7 @@ import JobCardView from "@/components/ui/JobCardView";
 import {DarkTheme, DefaultTheme, ThemeProvider} from "@react-navigation/native";
 import {useColorScheme} from "@/hooks/useColorScheme";
 import {useApp} from "@/app/useContextAccount";
-import {FontAwesome5} from "@expo/vector-icons";
+import {FontAwesome5, Ionicons} from "@expo/vector-icons";
 import {ThemedText} from "@/components/ThemedText";
 
 export default function HomeScreen() {
@@ -17,7 +17,7 @@ export default function HomeScreen() {
     const {todayJobs:jobs, nextJob} = useApp();
 
     const modal = <View style={styles.flex_row}>
-        {nextJob ? <JobCardView job={nextJob} /> : <Text>No appointment for now</Text>}
+        {nextJob ? <JobCardView editable={true} job={nextJob} /> : <Text>No appointment for now</Text>}
     </View>
 
 
@@ -36,10 +36,16 @@ export default function HomeScreen() {
               <ModalView Element={modal} text={<FontAwesome5 name="calendar-alt" size={18} />} />
           </ThemedView>
           <View style={styles.container_job}>
-              {
+              { (jobs.length > 0) ?
                   jobs.map((job:any, i:number) => (
-                      <JobCardView job={job} key={i} />
+                      <JobCardView editable={true} job={job} key={i} />
                   ))
+                  :
+                  <View style={styles.flex_col}>
+                      <Ionicons name={"happy-outline"} size={120}/>
+                      <ThemedText type={"title"}>Congrats!</ThemedText>
+                      <ThemedText style={styles.titleText} type={"title"}>You have no jobs for today!</ThemedText>
+                  </View>
               }
           </View>
       </ThemeProvider>
@@ -53,7 +59,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: 150,
         gap: 8,
+    },
+    titleText: {
+        textAlign: 'center',
     },
     stepContainer: {
         gap: 8,
@@ -81,6 +92,8 @@ const styles = StyleSheet.create({
     flex_col: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '5px'
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '10px'
     }
 });

@@ -5,9 +5,11 @@ import {DarkTheme, DefaultTheme, ThemeProvider} from "@react-navigation/native";
 import {useColorScheme} from "@/hooks/useColorScheme";
 import {ThemedText} from "@/components/ThemedText";
 import {useRouter} from "expo-router";
+import {useApp} from "@/app/useContextAccount";
 
 function CustomHeader({employee} : {employee: any}) {
     const colorScheme = useColorScheme();
+    const {loadEmployees} = useApp()
     const router = useRouter()
 
     useEffect(() => {
@@ -16,6 +18,7 @@ function CustomHeader({employee} : {employee: any}) {
 
     const logoutHandler = () => {
         localStorage.removeItem('employee');
+        loadEmployees()
         router.navigate('/login')
     }
 

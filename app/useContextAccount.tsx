@@ -40,10 +40,7 @@ function useAppProvider(){
             let storageEmployee:any = JSON.parse(localStorage.getItem('employee')||'{}') || {};
             console.log("STORAGE:",!!storageEmployee.email);
             if(!storageEmployee.email){
-                const data = await UrlFetchApp(endpoints.employees(``), 'GET')
-                setAccounts([...data.employees, {first_name: "Testing", last_name: 'Profile', email: "giobero1402@gmail.com", id: 'pro_09a36d254a9f47c8be2d60b415b8b83e'}])
-
-                setLoading(false)
+                await loadEmployees()
 
                 return router.navigate('/login');
 
@@ -54,7 +51,28 @@ function useAppProvider(){
 
             setAccount(storageEmployee)
 
+            await loadJobs(storageEmployee)
+
+        }
+
+        fetchData()
+    }, []);
+
+    const loadEmployees = async () => {
+        const data = await UrlFetchApp(endpoints.employees(``), 'GET')
+        setAccounts([...data.employees, {first_name: "Testing", last_name: 'Profile', email: "giobero1402@gmail.com", id: 'pro_09a36d254a9f47c8be2d60b415b8b83e'}])
+
+        setLoading(false)
+    }
+
+    const loadJobs = async (storageEmployee:any) => {
+        try{
             const jobs = await UrlFetchApp(endpoints.jobs(`page_size=15&employee_ids[]=${storageEmployee?.id}`), 'GET')
+            const estimates = await UrlFetchApp(endpoints.estimates(`page_size=15&employee_ids[]=${storageEmployee?.id}`), 'GET')
+            if(estimates.estimates[0]?.schedule){
+                jobs.jobs.push(estimates.estimates)
+            }
+            console.log(jobs.jobs)
             // @ts-ignore
             const sortJobs = jobs.jobs.sort((a:any, b:any) => new Date(b.schedule.scheduled_start) - new Date(a.schedule.scheduled_start))
             setJobs(sortJobs)
@@ -77,10 +95,10 @@ function useAppProvider(){
             setStatus(JSON.parse(localStorage.getItem('jobs') || '{}'))
 
             setLoading(false)
+        }catch (error) {
+            console.error(error)
         }
-
-        fetchData()
-    }, []);
+    }
 
     const saveInfo = async (data:any) => {
         const body = {
@@ -126,6 +144,8 @@ function useAppProvider(){
         saveInfo,
         status,
         setStatus,
-        loading
+        loading,
+        loadJobs,
+        loadEmployees
     }
 }

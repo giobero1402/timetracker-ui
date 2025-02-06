@@ -14,7 +14,7 @@ export default function LoginView(){
     const [isFocus, setIsFocus] = useState(false);
     const [sent, setSent] = useState(false);
     const [code, setCode] = useState("");
-    const {accounts, setAccount} = useApp()
+    const {accounts, setAccount, loadJobs} = useApp()
     const router = useRouter()
 
     useEffect(() => {
@@ -44,7 +44,7 @@ export default function LoginView(){
 
         localStorage.setItem('employee', JSON.stringify(acc))
         setAccount(acc)
-        console.log(acc)
+        loadJobs(acc)
         router.navigate('/')
     }
     return <>

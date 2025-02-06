@@ -4,6 +4,7 @@ const SURL = process.env.EXPO_PUBLIC_SPREADSHEET_URL
 const endpoints = {
     employees: (query) => `${URL}/employees?${query}`,
     jobs: (query) => `${URL}/jobs?${query}`,
+    estimates: (query) => `${URL}/estimates?${query}`,
     job: (id) => `${URL}/jobs/${id}`,
     job_schedule: (id) => `${URL}/jobs/${id}/schedule`,
     customer: (id) => `${URL}/customers/${id}`,
